@@ -123,7 +123,9 @@ export default function Home() {
   const [choice, setChoice] = useState<number | null>(null);
   const [tour, setTour] = useState(0);
   const [shot, setShot] = useState<'ready' | 'flying' | 'goal'>('ready');
+  const [aim, setAim] = useState<'left' | 'center' | 'right'>('center');
   const [feedOpen, setFeedOpen] = useState(false);
+  const resumeDownload = useRef<HTMLAnchorElement>(null);
   const shotTimers = useRef<number[]>([]);
 
   useEffect(() => {
@@ -136,7 +138,8 @@ export default function Home() {
   const takeShot = () => {
     if (shot !== 'ready') return;
     setShot('flying');
-    shotTimers.current.push(window.setTimeout(() => setShot('goal'), 850));
+    shotTimers.current.push(window.setTimeout(() => { setShot('goal'); resumeDownload.current?.click(); }, 850));
+    shotTimers.current.push(window.setTimeout(() => setShot('ready'), 3900));
   };
 
   const openOverview = () => { setTour(0); setView('quick'); };
@@ -144,11 +147,12 @@ export default function Home() {
 
   return <main id="main-content" className="football-world">
     <a className="skip-link" href="#main-content">Skip to portfolio</a>
+    <a ref={resumeDownload} className="hidden-resume-download" href="/Ketan-Sharma-Resume.pdf" download tabIndex={-1} aria-hidden="true">Download Resume</a>
     <header className="match-bar"><div className="club-mark"><span>KS</span><div><strong>KETAN FC</strong><small>KETAN SHARMA · GURGAON</small></div></div><div className="season-status"><span>CURRENT POSITION</span><strong>SENIOR PLATFORM ENGINEER</strong></div><nav aria-label="Primary actions"><button className="overview-action" onClick={openOverview}>▶ 90-SECOND OVERVIEW</button><a className="resume-action" href="/Ketan-Sharma-Resume.pdf" download>RESUME ↓</a><a className="contact-action" href="mailto:ketansharma040293@gmail.com">CONTACT →</a></nav></header>
 
     <section className="career-screen"><aside className="game-menu" aria-label="Portfolio sections"><p>RECRUITER MENU</p>{menu.map((item, index) => <button key={item.id} aria-pressed={selected === index} className={selected === index ? 'active' : ''} onClick={() => openMenu(index)}><span>0{index + 1}</span><b>{item.label}<small>{item.hint}</small></b><i>›</i></button>)}<div className="availability"><i /> TARGET ROLES<br/>SENIOR / LEAD PLATFORM · DEVOPS · SRE</div></aside>
       <section className="player-hero"><div className="hero-content"><p className="mode-label">SENIOR PLATFORM / DEVOPS / SRE ENGINEER</p><h1>Ketan<br /><em>Sharma</em></h1><div className="position-line"><span>FOOTBALL ALIAS</span><strong>THE PLATFORM PLAYMAKER</strong><i>10+ YEARS</i></div><p className="player-intro">Technical lead building and operating resilient AWS and Kubernetes platforms at enterprise scale. Connects people, automation and reliability to help engineering teams deliver safely and recover quickly.</p><div className="hero-proof" aria-label="Career highlights"><span><strong>100+</strong>Applications</span><span><strong>10+</strong>EKS clusters</span><span><strong>99.95%</strong>Availability</span><span><strong>50%</strong>Lower MTTR</span></div><div className="hero-actions"><button className="kickoff" onClick={openOverview}>90-SECOND OVERVIEW <span>→</span></button><button className="secondary-kickoff" onClick={() => { setSelected(0); setView('career'); }}>VIEW EXPERIENCE</button></div></div>
-        <div className={`player-stage penalty-stage ${shot}`}><div className="stadium-light light-one" /><div className="stadium-light light-two" /><div className="stadium-crowd" /><div className="penalty-pitch"><div className="penalty-arc"/><div className="penalty-spot"/></div><div className="goal"><div className="goal-net"/><div className="goal-line top"/><div className="goal-line left"/><div className="goal-line right"/><div className="goal-depth left-depth"/><div className="goal-depth right-depth"/></div><button className="penalty-ball" onClick={takeShot} disabled={shot !== 'ready'} aria-label="Shoot football"><span aria-hidden="true">⚽</span>{shot === 'ready' && <strong>SHOOT</strong>}</button><div className="goal-flash" aria-live="polite"><strong>GOAL!</strong><span>PLAYER PROFILE UNLOCKED</span><div><a href="/Ketan-Sharma-Resume.pdf" target="_blank" rel="noreferrer">OPEN RESUME ↗</a><a href="/Ketan-Sharma-Resume.pdf" download>DOWNLOAD PDF ↓</a><button onClick={() => setShot('ready')}>RETAKE</button></div></div></div>
+        <div className={`player-stage penalty-stage ${shot} aim-${aim}`}><div className="stadium-light light-one" /><div className="stadium-light light-two" /><div className="stadium-crowd" /><div className="penalty-pitch"><div className="penalty-arc"/><div className="penalty-spot"/></div><div className="goal-frame"><div className="goal-net"/><div className="goal-line top"/><div className="goal-line left"/><div className="goal-line right"/><div className="goal-depth left-depth"/><div className="goal-depth right-depth"/><div className="aim-panel" aria-label="Choose where to aim"><strong>AIM</strong><div>{(['left','center','right'] as const).map((target) => <button key={target} aria-label={`Aim ${target}`} aria-pressed={aim === target} className={aim === target ? 'active' : ''} onClick={() => setAim(target)} disabled={shot !== 'ready'}><span/></button>)}</div></div><div className="goal-particles" aria-hidden="true">{Array.from({length:8},(_,index)=><i key={index}/>)}</div></div><button className="penalty-ball" onClick={takeShot} disabled={shot !== 'ready'} aria-label="Shoot football"><span aria-hidden="true">⚽</span>{shot === 'ready' && <strong>SHOOT</strong>}</button><div className="goal-flash" aria-live="polite"><strong>GOAL!</strong><span>RESUME DOWNLOADED</span></div></div>
       </section><NewsRail open={feedOpen} onToggle={() => setFeedOpen((value) => !value)} /></section>
     <footer className="score-strip"><div><span>CURRENT CLUB</span><strong>BOSTON SCIENTIFIC</strong><em>SENIOR PLATFORM ENGINEER</em></div><div><span>DELIVERY IMPACT</span><strong>DEPLOYMENT</strong><em>45 → 15 MIN</em></div><div><span>LEADERSHIP</span><strong>TEAM CAPTAIN</strong><em>~8 ENGINEERS · 3 WORKSTREAMS</em></div><div><span>AI PLATFORM</span><strong>DHP AGENT</strong><em>30+ USERS · 6 TEAMS</em></div></footer>
 
